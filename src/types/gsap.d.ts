@@ -1,3 +1,1 @@
-declare module "gsap-trial/SplitText" {
-    export const SplitText: any;
-}
+// Removed declaration since SplitText is replaced by SplitType

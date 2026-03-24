@@ -2,26 +2,27 @@ import { useEffect } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverLinks from "./HoverLinks";
 import { gsap } from "gsap";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import Lenis from "@studio-freight/lenis";
 import "./styles/Navbar.css";
 
-gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
-export let smoother: ScrollSmoother;
+gsap.registerPlugin(ScrollTrigger);
+export let lenis: any;
 
 const Navbar = () => {
   useEffect(() => {
-    smoother = ScrollSmoother.create({
-      wrapper: "#smooth-wrapper",
-      content: "#smooth-content",
-      smooth: 1.7,
-      speed: 1.7,
-      effects: true,
-      autoResize: true,
-      ignoreMobileResize: true,
+    lenis = new Lenis({
+      duration: 1.7,
+      smoothWheel: true,
     });
+    lenis.on("scroll", ScrollTrigger.update);
 
-    smoother.scrollTop(0);
-    smoother.paused(true);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    lenis.scrollTo(0, { immediate: true });
+    lenis.stop();
 
     let links = document.querySelectorAll(".header ul a");
     links.forEach((elem) => {
@@ -31,12 +32,9 @@ const Navbar = () => {
           e.preventDefault();
           let elem = e.currentTarget as HTMLAnchorElement;
           let section = elem.getAttribute("data-href");
-          smoother.scrollTo(section, true, "top top");
+          if (section) lenis.scrollTo(section);
         }
       });
-    });
-    window.addEventListener("resize", () => {
-      ScrollSmoother.refresh(true);
     });
   }, []);
   return (
